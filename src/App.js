@@ -1,23 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import { TaskList } from "./components/task/TaskList";
+import { TaskHeader } from "./components/task/TaskHeader";
+import "./App.css";
+import { useCallback, useState } from "react";
+import { ajaxRequest } from "./utils";
+import { METHODS } from "./constant";
 
 function App() {
+
+  const [taskList, setTaskList] = useState([]);
+
+  const getTaskList = useCallback(async () => {
+    try {
+      const data = await ajaxRequest(`tasks`, METHODS.GET, null);
+      if (data) {
+        setTaskList(data);
+      }
+    } catch (err) {
+      console.log("error", err);
+    }
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <TaskHeader getTaskList={getTaskList} />
+      <TaskList taskList={taskList} getTaskList={getTaskList} />
     </div>
   );
 }
